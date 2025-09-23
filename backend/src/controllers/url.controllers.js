@@ -51,13 +51,29 @@ export const getRedirectedUrl = async (req, res) => {
             { new: true }
         );
 
-        return res.status(200).json(
-            {
-                redirect_to_url: UrlObj.redirectURL
-            }
-        )
+        res.redirect(UrlObj.redirectURL);
+
     } catch (error) {
         console.log("error", error)
     }
 
+}
+
+export const getAnalytics = async (req, res) => {
+    
+    const nanoID = req.params.nanoID?.trim()
+    console.log(nanoID)
+
+    const urlObj = await URL.findOne({ shortId: nanoID })
+
+    if (!urlObj) {
+        return res.status(400).json({ Error: "Nano id is wrong" })
+    }
+
+    return res.status(200).json(
+        {
+            totalClicks: urlObj.visitHistory.length,
+            analytics: urlObj.visitHistory
+        }
+    )
 }
